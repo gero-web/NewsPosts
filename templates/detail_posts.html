@@ -1,0 +1,32 @@
+{% extends  'Base\default.html' %}
+{% load censor_filter%}
+{% block Title %}
+    News and Posts
+{% endblock %}
+
+{% block content %}
+            <h1>
+                {{post.title|censor:'post'}}
+            </h1>
+            <p>
+                {{ post.author}}
+            </p>
+            <p>
+                {{post.rating}}
+            </p>
+            <p>
+                {{post.body|censor:'чел'}}
+            </p>
+             <p>
+                {{post.choise}}
+            </p>
+            <p>
+                {{post.created|date:'d.m.Y'}}
+            </p>
+            <div>
+                 <button onclick="{{post.like}}"> Like</button>
+                 <button onclick="{{post.dislike}}"> Dislike</button>
+                 <a href="{% url 'posts' %}" > Posts</a>
+            </div>
+
+{% endblock %}

@@ -10,8 +10,7 @@ def BestOfTheBest():
 
 def BestOfTheBestPost():
     post = Post.objects.order_by('rating')[0]
-    return  ' '.join([post.author.athor.username, str(post.created), post.title])
-
+    return ' '.join([post.author.athor.username, str(post.created), post.title])
 
 
 def AllComments():
@@ -20,10 +19,12 @@ def AllComments():
         print(comment.author_comment.username, str(comment.created), comment.body, str(comment.rating))
 
 
-
 class Author(models.Model):
     athor = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return f'{ self.athor.username}'
 
     def update_rating(self):
         rating_post = sum(item['rating'] for item in Post.objects.filter(author=self.pk).values('rating')) * 3
