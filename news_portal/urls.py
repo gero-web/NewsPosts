@@ -19,5 +19,5 @@ from news import urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('news/',include(urls))
+    path('',include(urls))
 ]

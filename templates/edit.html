@@ -1,0 +1,16 @@
+{% extends  'Base\default.html' %}
+{% load censor_filter %}
+
+{% block Title %}
+  Create
+{% endblock %}
+
+{% block content %}
+  <form action="" method="post">
+    {%csrf_token%}
+    {{form.as_p}}
+    <input type="submit" value="Submit">
+  </form>
+ <a href="{{request.META.HTTP_REFERER}}">Go back</a>
+
+{% endblock %}

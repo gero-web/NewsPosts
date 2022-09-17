@@ -1,0 +1,17 @@
+{% extends  'Base\default.html' %}
+{% load censor_filter%}
+{% block Title %}
+   delete
+{% endblock %}
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+
+
+<p>Вы хотите удалить? "{{ object }}"?</p>
+
+    <input type="submit" value="Confirm">
+     <a href="{% url 'posts' %}" > Posts</a>
+</form>
+ <a href="{{request.META.HTTP_REFERER}}">Go back</a>
+{% endblock %}

@@ -12,6 +12,11 @@
                 {{ post.author}}
             </p>
             <p>
+                {%for cat in post.categories.all%}
+                    <p> {{ cat }} </p>
+                {% endfor %}
+            </p>
+            <p>
                 {{post.rating}}
             </p>
             <p>
@@ -26,7 +31,7 @@
             <div>
                  <button onclick="{{post.like}}"> Like</button>
                  <button onclick="{{post.dislike}}"> Dislike</button>
-                 <a href="{% url 'posts' %}" > Posts</a>
+                <a href="{{request.META.HTTP_REFERER}}">Go back</a>
             </div>
 
 {% endblock %}

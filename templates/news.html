@@ -1,13 +1,20 @@
 {% extends  'Base\default.html' %}
 {% load censor_filter %}
+{% load url_context_filter %}
 
 {% block Title %}
-News and Posts
+News
 {% endblock %}
 {% block content %}
     <div style="display:flex;    flex-direction: column;">
             <a href="{% url 'create_post' %}"> Создать новый пост!</a>
             <a href="{% url 'create_news' %}"> Создать новую новость!</a>
+    </div>
+    <div>
+        <form action="" method="get">
+            {{  filterset.form.as_p}}
+            <input  type="submit" value="Найти"/>
+        </form>
     </div>
     {% for post in posts%}
         <div>
@@ -27,26 +34,26 @@ News and Posts
             </div>
             <div>
                 <a href="{% url 'news_detail' post.pk %}" type="button"> Detail</a>
-                <a href="{% url 'delete_article' post.pk %}" type="button"> Удалить</a>
-                <a href="{% url 'edit_post' post.pk %}" type="button"> Изминить</a>
+                <a href="{% url 'delete_news' post.pk %}" type="button"> Удалить</a>
+                <a href="{% url 'edit_news' post.pk %}" type="button"> Изминить</a>
             </div>
         </div>
     {% endfor%}
         <div>
             {% if page_obj.has_previous %}
                 <p>
-                        <a href="?page=1">  First: 1</a>
+                        <a href="?{% url_replace page=1 %}">1</a>
                 </p>
-                <a href="?page={{ page_obj.previous_page_number }}">Previous: {{ page_obj.previous_page_number }}</a>
+                <a href="?{% url_replace page=page_obj.previous_page_number %}">Previous: {{ page_obj.previous_page_number }}</a>
             {% endif %}
             <p>
                  Page {{ page_obj.number }}
             </p>
             {% if page_obj.has_next %}
-                   <a href="?page={{ page_obj.next_page_number }}">Next: {{page_obj.next_page_number }}</a>
+                   <a href="?{% url_replace page=page_obj.next_page_number %}">Next: {{page_obj.next_page_number }}</a>
                    <p>
 
-                        <a href="?page={{ page_obj.paginator.num_pages }}">  Last:
+                        <a href="?{% url_replace page=page_obj.paginator.num_pages %}">  Last:
                             {{page_obj.paginator.num_pages }}</a>
                    </p>
             {% endif%}
