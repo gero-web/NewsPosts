@@ -1,5 +1,5 @@
 from django_filters import FilterSet, ModelMultipleChoiceFilter, DateFilter
-from django.forms import DateInput
+from django.forms import DateInput, Select, TextInput
 from .models import Post, Category
 
 
@@ -25,4 +25,11 @@ class PostFilter(FilterSet):
         model = Post
         fields = {
             'title': ['icontains'],
+        }
+        widgets = {
+            'title': TextInput(attrs={
+                'class': 'form-control',
+                'style': 'max-width: 300px;',
+            }
+            ),
         }
