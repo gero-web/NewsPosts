@@ -1,5 +1,6 @@
 {% extends  'Base\default.html' %}
 {% load censor_filter %}
+{% load user_in_group %}
 {% load url_context_filter %}
 
 {% block Title %}
@@ -7,8 +8,10 @@ News
 {% endblock %}
 {% block content %}
     <div style="display:flex;    flex-direction: column;">
+        {% if request.user.is_authenticated%}
             <a href="{% url 'create_post' %}"> Создать новый пост!</a>
             <a href="{% url 'create_news' %}"> Создать новую новость!</a>
+        {% endif %}
     </div>
     <div>
         <form action="" method="get">
@@ -32,18 +35,22 @@ News
             <p>
                 {{post.created|date:'d.m.Y'}}
             </p>
+                 {% if request.user.is_authenticated %}
             <div class="col">
                 <div class="p-3 border bg-light"  style="max-width:300px;">
                  <button onclick="{{post.like}}"> Like</button>
                  <button onclick="{{post.dislike}}"> Dislike</button>
                  </div>
             </div>
+                {% endif%}
             <div class="col">
-                <div class="p-3 border bg-light" style="max-width:300px;">
-                    <a type="button" class="btn btn-warning" href="{% url 'edit_news' post.pk %}" type="button"> Изминить</a>
-                    <a type="button" class="btn btn-primary" href="{% url 'news_detail' post.pk %}" type="button"> Detail</a>
-                    <a type="button" class="btn btn-danger" href="{% url 'delete_news' post.pk %}" type="button"> Удалить</a>
-                </div>
+                {% if request.user|has_group:"authors" %}
+                    <div class="p-3 border bg-light" style="max-width:300px;">
+                        <a type="button" class="btn btn-warning" href="{% url 'edit_news' post.pk %}" type="button"> Изминить</a>
+                        <a type="button" class="btn btn-primary" href="{% url 'news_detail' post.pk %}" type="button"> Detail</a>
+                        <a type="button" class="btn btn-danger" href="{% url 'delete_news' post.pk %}" type="button"> Удалить</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     {% endfor%}

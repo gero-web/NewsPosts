@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import DetailView, ListView
 from django.views.generic import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
@@ -41,7 +41,8 @@ class DetailNews(DetailView):
     template_name = 'detail_posts.html'
 
 
-class CreatePost(CreateView):
+class CreatePost(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post')
     form_class = NewsAndPostForms
     template_name = 'create.html'
     success_url = reverse_lazy('posts')
@@ -54,19 +55,22 @@ class CreatePost(CreateView):
         return super().form_valid(form)
 
 
-class CreateNews(CreateView):
+class CreateNews(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post')
     form_class = NewsAndPostForms
     template_name = 'create.html'
     success_url = reverse_lazy('news')
     model = Post
 
 
-class DeletePostOrNews(DeleteView):
+class DeletePostOrNews(PermissionRequiredMixin, DeleteView):
+    permission_required = ('news.delete_post')
     model = Post
     template_name = 'confirm.html'
 
 
-class EditPostOrNews(UpdateView):
+class EditPostOrNews(PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post')
     model = Post
     form_class = NewsAndPostForms
     template_name = 'edit.html'

@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from news import urls
+from myaccount import urls as account_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include(urls))
+    path('', include(urls)),
+    path('accounts/', include('allauth.urls')),
+    path('accounts/', include(account_urls))
 ]
