@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib.auth.models import User, Group
 
 
@@ -11,4 +12,8 @@ def user_in_role(sender, instance: User, created, **kwargs):
         print(group)
         instance.groups.add(group)
         instance.save()
+        send_mail(subject='Привет',
+                  message='Добро пожаловать!',
+                  from_email=settings.EMAIL_HOST_USER,
+                  recipient_list=instance.email)
 

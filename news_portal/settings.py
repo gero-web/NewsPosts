@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    "django_apscheduler",
 
     'allauth',
     'allauth.account',
@@ -137,6 +138,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
 LOGIN_REDIRECT_URL = "/news/"
 LOGOUT_REDIRECT_URL = '/news/'
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
 with open(os.path.join(BASE_DIR, 'config.json'), 'r', encoding='utf-8') as f:
     d = json.load(f)
     EMAIL_BACKEND, EMAIL_HOST, \
