@@ -15,11 +15,7 @@ class NewsAndPostForms(ModelForm):
             'body',
         ]
         widgets ={
-            'author': TextInput(attrs={
-                'class': 'form-control',
-                'style': 'max-width: 300px;',
-                }
-            ),
+
             'title': TextInput(attrs={
                 'class': 'form-control',
                 'style': 'max-width: 300px;',
@@ -30,9 +26,6 @@ class NewsAndPostForms(ModelForm):
                 'style': 'max-width: 300px;',
              }
             ),
-            'categories': Select(attrs={
-                'class': 'form-select',
-                'style': 'max-width: 300px;',
-                }
-            )
+
+
         }

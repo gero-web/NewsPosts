@@ -2,6 +2,7 @@
 {% load censor_filter %}
 {% load user_in_group %}
 {% load url_context_filter %}
+{% load sub %}
 
 {% block Title %}
 News
@@ -21,8 +22,16 @@ News
     </div >
 
 <div class="container">
-      <div class="row gx-5">
+      <div>
+          {% for cate in category %}
+            {%  if request.user.is_authenticated and not  request.user|has_sub:cate.pk %}
+                  <a type="button" class="btn btn-warning" href="{% url 'sub' cate.pk %}" type="button"> {{cate}} Подписатся</a>
+            {% endif %}
+          {% endfor %}
+    </div>
+    <div class="row gx-5">
            <div class="col">
+
     {% for post in posts%}
         <div >
             <h1>
@@ -35,7 +44,9 @@ News
             <p>
                 {{post.created|date:'d.m.Y'}}
             </p>
-                 {% if request.user.is_authenticated %}
+
+
+          {% if request.user.is_authenticated %}
             <div class="col">
                 <div class="p-3 border bg-light"  style="max-width:300px;">
                  <button onclick="{{post.like}}"> Like</button>
@@ -44,11 +55,11 @@ News
             </div>
                 {% endif%}
             <div class="col">
-                {% if request.user|has_group:"authors" %}
+             {% if request.user|has_group:"authors" %}
                     <div class="p-3 border bg-light" style="max-width:300px;">
-                        <a type="button" class="btn btn-warning" href="{% url 'edit_news' post.pk %}" type="button"> Изминить</a>
-                        <a type="button" class="btn btn-primary" href="{% url 'news_detail' post.pk %}" type="button"> Detail</a>
-                        <a type="button" class="btn btn-danger" href="{% url 'delete_news' post.pk %}" type="button"> Удалить</a>
+                        <a type="button" class="btn btn-warning" href="{% url 'edit_news' post.pk %}" > Изминить</a>
+                        <a type="button" class="btn btn-primary" href="{% url 'news_detail' post.pk %}" > Detail</a>
+                        <a type="button" class="btn btn-danger" href="{% url 'delete_news' post.pk %}" > Удалить</a>
                     </div>
                 {% endif %}
             </div>

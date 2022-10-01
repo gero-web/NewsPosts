@@ -1,10 +1,21 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, ListView
 from django.views.generic import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
-from .models import Post
+from .models import Post, SubscriptionCategory, Category, Author
 from .form import NewsAndPostForms
 from .filter import PostFilter
+
+
+@login_required
+def Sucrabe(req, pk):
+    user = req.user
+    cate = Category.objects.get(pk=pk)
+    sub = SubscriptionCategory(category=cate, user=user)
+    sub.save()
+    return HttpResponseRedirect("/news")
 
 
 class ListPost(ListView):
@@ -14,6 +25,7 @@ class ListPost(ListView):
     ordering = '-created'
     queryset = Post.objects.filter(choise='ar')
     paginate_by = 10
+
 
 
 class ListNews(ListView):
@@ -32,6 +44,8 @@ class ListNews(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filterset'] = self.filter_queryset
+
+        context['category'] = Category.objects.all()
         return context
 
 
@@ -49,6 +63,7 @@ class CreatePost(PermissionRequiredMixin, CreateView):
     model = Post
 
     def form_valid(self, form):
+
         if form.is_valid():
             article: Post = form.save(commit=False)
             article.choise = 'ar'
@@ -62,11 +77,17 @@ class CreateNews(PermissionRequiredMixin, CreateView):
     success_url = reverse_lazy('news')
     model = Post
 
+    def form_valid(self, form):
+        if form.is_valid():
+            post: Post = form.save(commit=False)
+        return super().form_valid(form)
+
 
 class DeletePostOrNews(PermissionRequiredMixin, DeleteView):
     permission_required = ('news.delete_post')
     model = Post
     template_name = 'confirm.html'
+    success_url = reverse_lazy('news')
 
 
 class EditPostOrNews(PermissionRequiredMixin, UpdateView):
