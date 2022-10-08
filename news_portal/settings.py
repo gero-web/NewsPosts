@@ -12,10 +12,12 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os.path
 import json
 from pathlib import Path
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(os.path.join(BASE_DIR, 'celery.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -142,6 +144,10 @@ LOGOUT_REDIRECT_URL = '/news/'
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
+CELERY_BROKER_URL = os.getenv('REDIS_IP')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_IP')
+
+print(os.getenv('REDIS_IP'))
 with open(os.path.join(BASE_DIR, 'config.json'), 'r', encoding='utf-8') as f:
     d = json.load(f)
     EMAIL_BACKEND, EMAIL_HOST, \
