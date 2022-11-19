@@ -17,8 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from news import urls
 from myaccount import urls as account_urls
+from news.views import Index
+from django.views.decorators.cache import cache_page
 
 urlpatterns = [
+    path('',Index.as_view(), name='index'),
     path('admin/', admin.site.urls),
     path('', include(urls)),
     path('accounts/', include('allauth.urls')),

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.core.cache import cache
 
 
 # Create your models here.
@@ -56,6 +57,10 @@ class Post(models.Model):
     rating = models.DecimalField(max_digits=5, default=0.0, decimal_places=2)
     categories = models.ManyToManyField(Category, through='PostCategory')
     body = models.TextField()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(f'detail_news-{self.pk}')
 
     def get_absolute_url(self):
         name_url = ''
