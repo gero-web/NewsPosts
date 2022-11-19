@@ -9,13 +9,17 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+
 import os.path
 import json
 from pathlib import Path
 
+import django.utils.log
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(os.path.join(BASE_DIR, 'celery.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -80,6 +84,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'news_portal.wsgi.application'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379',
+    }
+}
+
 AUTHENTICATION_BACKENDS = [
 
     'django.contrib.auth.backends.ModelBackend',
@@ -142,6 +153,10 @@ LOGOUT_REDIRECT_URL = '/news/'
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
+CELERY_BROKER_URL = os.getenv('REDIS_IP')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_IP')
+
+print(os.getenv('REDIS_IP'))
 with open(os.path.join(BASE_DIR, 'config.json'), 'r', encoding='utf-8') as f:
     d = json.load(f)
     EMAIL_BACKEND, EMAIL_HOST, \
@@ -150,4 +165,115 @@ with open(os.path.join(BASE_DIR, 'config.json'), 'r', encoding='utf-8') as f:
     EMAIL_HOST_USER, \
     EMAIL_HOST_PASSWORD = d.values()
 
+ADMINS = [('admin', 'sergeq198.97@yandex.ru')]
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': "{asctime} ---- {levelname}  -- {message}",
+            'style': '{',
+        },
+        'info_simple': {
+            'format': "{asctime} -- {module}  -- {message}",
+            'style': '{',
+        },
+        'warning_simple': {
+            'format': "{asctime} --  {levelname} -- {pathname}  -- {message}",
+            'style': '{',
+        },
+        'error_simple': {
+            'format': "{asctime} --  {levelname} -- {pathname} -- {exc_info} -- {message}",
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
 
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'warning_console': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning_simple',
+        },
+        'error_console': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'error_simple',
+        },
+
+        'mail': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'info_simple',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filters': ['require_debug_false'],
+            'filename': './general.log',
+            'formatter': 'simple',
+        },
+        'error_loger': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': './error.log',
+            'formatter': 'error_simple',
+        },
+        'security_loger': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': './security.log',
+            'formatter': 'error_simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'warning_console', 'error_console', 'file'],
+            'propagate': 'False',
+        },
+        'django.request': {
+            'handlers': ['error_loger', 'mail'],
+            'propagate': 'False',
+        },
+        'django.server': {
+            'handlers': ['error_loger','mail'],
+            'propagate': 'False',
+        },
+        'django.template': {
+            'handlers': ['error_loger'],
+            'propagate': 'False',
+        },
+        'django.db_backends': {
+            'handlers': ['error_loger'],
+            'propagate': 'False',
+        },
+        'django.security': {
+            'handlers': ['security_loger'],
+            'propagate': 'False',
+        },
+
+
+
+        'error_logger': {
+            'handlers': ['error_loger', ],
+            'propagate': 'False',
+        },
+
+    }
+}

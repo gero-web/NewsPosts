@@ -1,3 +1,5 @@
 /venv
 /ideagit
 /config.json
+/celery.env
+/__pycache__/

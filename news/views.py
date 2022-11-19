@@ -1,12 +1,15 @@
+import logging
+
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
 from .models import Post, SubscriptionCategory, Category, Author
 from .form import NewsAndPostForms
 from .filter import PostFilter
+from django.core.cache import cache
 
 
 @login_required
@@ -27,8 +30,13 @@ class ListPost(ListView):
     paginate_by = 10
 
 
+class Index(TemplateView):
+
+    template_name = 'index.html'
+
 
 class ListNews(ListView):
+
     model = Post
     context_object_name = 'posts'
     template_name = 'news.html'
@@ -37,6 +45,7 @@ class ListNews(ListView):
     paginate_by = 2
 
     def get_queryset(self):
+
         queryset = super().get_queryset()
         self.filter_queryset = PostFilter(self.request.GET, queryset)
         return self.filter_queryset.qs
@@ -53,6 +62,16 @@ class DetailNews(DetailView):
     model = Post
     context_object_name = 'post'
     template_name = 'detail_posts.html'
+    queryset = Post.objects.all()
+
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'detail_news-{self.kwargs["pk"]}', None)
+
+        if obj is None:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'detail_news-{self.kwargs["pk"]}', obj, timeout=60 * 5)
+
+        return obj
 
 
 class CreatePost(PermissionRequiredMixin, CreateView):
@@ -63,7 +82,6 @@ class CreatePost(PermissionRequiredMixin, CreateView):
     model = Post
 
     def form_valid(self, form):
-
         if form.is_valid():
             article: Post = form.save(commit=False)
             article.choise = 'ar'
